@@ -1,0 +1,72 @@
+## main setting file for owlscript ########################
+
+#output debug messages
+DEBUG=true
+
+#base directory for scripts
+OWLBASE=/usr/local/owlscript
+
+#directory for logfiles
+OWLLOG=/var/log/owlscript
+
+## cronjobs or rc.local ###################################
+#run script boot.sh from rc.local
+RUNBOOTSCRIPT=false
+
+#run job to stream HD Cam 
+RUNSTREAMJOB=false
+
+#run job to upload data to FTP Server
+RUNFTPJOB=false
+
+#runautoreboot
+RUNAUTOREBOOT=false
+
+#use openvpn
+USEOPENVPN=false
+
+#use wifi
+USEWIFI=true
+
+#update rcclocal file
+UPDATERCCLOCAL=false
+#update inittab file
+UPDATEINITTAB=false
+#update crontab file
+UPDATECRONTAB=false
+#update etc/network/interfaces
+UPDATENETWORK=false
+
+## networking stuff #######################################
+#WIFI
+WIFISSID=
+WIFIPASSWORD=
+
+#STREAMING
+STREAMMODE=ustream
+STREAMUSERNAME=
+STREAMPASSWORD=
+STREAMURL=
+# delay on boot.sh to start stream (see "man sleep")
+STREAMDELAY=120s
+
+#FTP
+FTPSERVER=
+FTPUSERNAME=
+FTPPASSWORD=
+
+## performance stuff ######################################
+#RAMDISK
+RAMDISKSIZE=20M
+
+#automatic ftp upload
+AUTOFTPUPLOAD=false
+
+## hardware settings ######################################
+DHTPIN=7
+
+## software settings ######################################
+USBRESOLUTION=1600x1200
+HDRESOLUTION=1600x1200
+
+BINARIESNEEDED="/usr/bin/fswebcam /usr/bin/convert /opt/vc/bin/raspistill /usr/bin/ftp /usr/local/owlscript/restart.sh /usr/local/bin/ffmpeg /usr/local/owlscript/loldht /usr/local/owlscript/gpio"
