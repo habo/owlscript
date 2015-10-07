@@ -54,6 +54,7 @@ STREAMDELAY=120s
 FTPSERVER=
 FTPUSERNAME=
 FTPPASSWORD=
+FTPBASEDIRECTORY=public_html
 
 ## performance stuff ######################################
 #RAMDISK
