@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#temperatur und feuchtigkeitswerte werdenausgelesen und in eine datei geschrieben
+#temperatur und feuchtigkeitswerte werden ausgelesen und in eine Datei geschrieben
 
 source /etc/owlscript
 [ -d $OWLLOG ] || mkdir -p $OWLLOG

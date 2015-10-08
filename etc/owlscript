@@ -9,9 +9,11 @@ OWLBASE=/usr/local/owlscript
 #directory for logfiles
 OWLLOG=/var/log/owlscript
 
+BACKUPDIRECTORY=/var/backups/owlscript
+
 ## cronjobs or rc.local ###################################
 #run script boot.sh from rc.local
-RUNBOOTSCRIPT=false
+RUNBOOTSCRIPT=true
 
 #run job to stream HD Cam 
 RUNSTREAMJOB=false
@@ -20,22 +22,22 @@ RUNSTREAMJOB=false
 RUNFTPJOB=false
 
 #runautoreboot
-RUNAUTOREBOOT=false
+RUNAUTOREBOOT=true
 
 #use openvpn
 USEOPENVPN=false
 
 #use wifi
-USEWIFI=true
+USEWIFI=false
 
 #update rcclocal file
-UPDATERCCLOCAL=false
+UPDATERCLOCAL=true
 #update inittab file
 UPDATEINITTAB=false
 #update crontab file
-UPDATECRONTAB=false
+UPDATECRONTAB=true
 #update etc/network/interfaces
-UPDATENETWORK=false
+UPDATENETWORK=true
 
 ## networking stuff #######################################
 #WIFI
@@ -67,7 +69,23 @@ AUTOFTPUPLOAD=false
 DHTPIN=7
 
 ## software settings ######################################
-USBRESOLUTION=1600x1200
-HDRESOLUTION=1600x1200
 
+#resolution of USB cam
+USBWIDTH=1600
+USBHEIGHT=1200
+USBRESOLUTION=${USBWIDTH}x${USBHEIGHT}
+
+#resolution of HD cam
+HDWIDTH=1600
+HDHEIGHT=1200
+HDRESOLUTION=${HDWIDTH}x${HDHEIGHT}
+HDROTATE=180
+
+#dependency checking
 BINARIESNEEDED="/usr/bin/fswebcam /usr/bin/convert /opt/vc/bin/raspistill /usr/bin/ftp /usr/local/owlscript/restart.sh /usr/local/bin/ffmpeg /usr/local/owlscript/loldht /usr/local/owlscript/gpio"
+
+function debug(){
+	if $DEBUG; then
+		echo "DEBUG $@"
+	fi
+}

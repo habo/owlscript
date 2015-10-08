@@ -3,7 +3,6 @@
 source /etc/owlscript
 
 if $RUNBOOTSCRIPT ; then
-	$DEBUG && echo "run boot script"
-	$DEBUG && echo "stream startet in $STREAMDELAY"
-	sleep $STREAMDELAY && $OWLBASE/streamupload.sh &
+	debug "run boot script and start in $STREAMDELAY"
+	$RUNSTREAMJOB && sleep $STREAMDELAY && $OWLBASE/streamupload.sh &
 fi

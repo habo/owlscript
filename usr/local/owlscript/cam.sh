@@ -17,7 +17,7 @@ cd $TMPDIR
 hum=$(grep "Humidity" $OWLLOG/temp.txt | awk -F" " {'print $3'})
 temp=$(grep "Temperature" $OWLLOG/temp.txt | awk -F" " {'print $7'})
 out="Temp: ${temp}°C - Hum: ${hum}%"
-$DEBUG && echo "$out"
+debug "$out"
 
 
 # Take a picture
@@ -33,41 +33,49 @@ if [ "$1" == "usb" ]; then
 		INPUT=$2
 	fi
 	let ID=$INPUT+2
-	CAMDIR="CAM$INPUT"
-	if [ -e /dev/video$INPUT ]; then
-		/usr/bin/fswebcam -r $USBRESOLUTION --no-banner $filename -i $INPUT
-		#Schriftzug erstellen als PNG
-		/usr/bin/convert -size $USBRESOLUTION xc:transparent -font Courier-bold -pointsize 20 -fill white -draw "text 10,460 '$out | $date " watermark.png
-		# Cam-Bild und Schriftzug zusammenbringen
-		/usr/bin/composite -dissolve 50% -quality 100 watermark.png $filename $filename
+	CAMDIR="CAM$ID"
+        DEVICE=/dev/video$INPUT
+	TEXTSIZE=20
+	TEXT="text 10,460 '$out | $date "
+	RESOLUTION=$USBRESOLUTION
+	if [ -e $DEVICE ]; then
+		/usr/bin/fswebcam -r $USBRESOLUTION --no-banner $filename -d $DEVICE
 	else
-		echo "no such file or cam: /dev/video$INPUT"
+		echo "no such file or cam: $DEVICE"
+		exit 2
 	fi
 fi
 
 if [ "$1" == "hd" ]; then
 	CAMDIR="cam1"
-	/opt/vc/bin/raspistill -t 500 -o $filename -vf -hf --rotation 180 -v --nopreview -q 40 -w 1600 -h 1200
-	  
+	/opt/vc/bin/raspistill -t 500 -o $filename -vf -hf --rotation $HDROTATE -v --nopreview -q 40 -w $HDWIDTH -h $HDHEIGHT
+	TEXTSIZE=50
+	TEXT="text 20,1150 '$out | $date "
+	RESOLUTION=$HDRESOLUTION
+fi
+
+# Cam-Bild und Schriftzug zusammenbringen
+if [ -e $filename ]; then
 	#Schriftzug erstellen als PNG
-	/usr/bin/convert -size $HDRESOLUTION xc:transparent -font Courier-bold -pointsize 50 -fill white -draw "text 20,1150 '$out | $date " watermark.png
-	# Cam-Bild und Schriftzug zusammenbringen
+	/usr/bin/convert -size $RESOLUTION xc:transparent -font Courier-bold -pointsize $TEXTSIZE -fill white -stroke black -draw "$TEXT" watermark.png
+	# und zusammenführen
 	/usr/bin/composite -dissolve 50% -quality 100 watermark.png $filename $filename
 fi
 
-$DEBUG && echo "use CAMDIR=$CAMDIR"
+debug "use CAMDIR=$CAMDIR"
 
 if $AUTOFTPUPLOAD ;then
-echo "Uploading picture..."
+debug "Uploading picture..."
 /usr/bin/ftp -inv $FTPSERVER << EOF
 user $FTPUSERNAME $FTPPASSWORD
 cd $FTPBASEDIRECTORY
+mkdir $CAMDIR
 cd $CAMDIR
 put $filename
 bye
 EOF
 fi 
 
-echo "Remove CAM folder directory"
+debug "Remove CAM folder directory"
 $DEBUG || rm $TMPDIR -rf
 
