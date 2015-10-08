@@ -3,10 +3,11 @@
 
 source /etc/owlscript
 
-if [ -z "$1" ]; then
+function printhelp(){
 	echo "need argument 'hd|usb <n>' to choose source, usb with optional camnr"
 	exit 1
-fi
+}
+[ -z "$1" ] && printhelp
 
 TMPDIR=/tmp/cam
 [ -d $TMPDIR ] || mkdir -p $TMPDIR
@@ -27,32 +28,38 @@ filename=${timestamp}.jpg
 
 CAMDIR="cam"
 
-if [ "$1" == "usb" ]; then
-	INPUT="0"
-	if [ -n "$2" ]; then
-		INPUT=$2
-	fi
-	let ID=$INPUT+2
-	CAMDIR="CAM$ID"
-        DEVICE=/dev/video$INPUT
-	TEXTSIZE=20
-	TEXT="text 10,460 '$out | $date "
-	RESOLUTION=$USBRESOLUTION
-	if [ -e $DEVICE ]; then
-		/usr/bin/fswebcam -r $USBRESOLUTION --no-banner $filename -d $DEVICE
-	else
-		echo "no such file or cam: $DEVICE"
-		exit 2
-	fi
-fi
-
-if [ "$1" == "hd" ]; then
-	CAMDIR="cam1"
-	/opt/vc/bin/raspistill -t 500 -o $filename -vf -hf --rotation $HDROTATE -v --nopreview -q 40 -w $HDWIDTH -h $HDHEIGHT
-	TEXTSIZE=50
-	TEXT="text 20,1150 '$out | $date "
-	RESOLUTION=$HDRESOLUTION
-fi
+case $1 in
+	usb)
+		INPUT="0"
+		if [ -n "$2" ]; then
+			INPUT=$2
+		fi
+		let ID=$INPUT+2
+		CAMDIR="cam$ID"
+		DEVICE=/dev/video$INPUT
+		TEXTSIZE=20
+		TEXT="text 10,460 '$out | $date "
+		$DEBUG && TEXT="$TEXT $INPUT"
+		RESOLUTION=$USBRESOLUTION
+		if [ -e $DEVICE ]; then
+			/usr/bin/fswebcam -r $USBRESOLUTION --no-banner $filename -d $DEVICE
+		else
+			echo "no such file or cam: $DEVICE"
+			exit 2
+		fi
+	;;
+	hd)
+		CAMDIR="cam1"
+		/opt/vc/bin/raspistill -t 500 -o $filename -vf -hf --rotation $HDROTATE -v --nopreview -q 40 -w $HDWIDTH -h $HDHEIGHT
+		TEXTSIZE=50
+		TEXT="text 20,1150 '$out | $date "
+		$DEBUG && TEXT="$TEXT hd"
+		RESOLUTION=$HDRESOLUTION
+	;;
+	*)
+		printhelp
+	;;
+esac
 
 # Cam-Bild und Schriftzug zusammenbringen
 if [ -e $filename ]; then
